@@ -17,7 +17,6 @@ class Receiver {
     channel.queueDeclare(QUEUE_NAME, false, false, false, null)
     println(" [*] Waiting for messages. To exit press Ctrl+C")
 
-    // DeliverCallback: 서버로부터 푸쉬된 메시지를 수신할 때 호출되는 콜백이다. 실제로 이 메시지를 사용할 때까지 buffer된다.
     val deliverCallback = DeliverCallback { _, delivery ->
       val message = String(delivery.body, charset("UTF-8"))
       println(" [x] Received '$message'")
@@ -29,10 +28,11 @@ class Receiver {
         println(" [x] Done")
       }
     }
-
+    val autoAck = true // autoAck를 true로 설정하면 RabbitMQ에 메시지를 전달한 후 바로 삭제한다. 디폴트는 true이다.
     channel.basicConsume(QUEUE_NAME, true, deliverCallback) { _: String? -> }
   }
 
+  //시간이 걸리는 작업 수행을 모방하기 위해 메시지의 각 . 개수마다 1초를 기다린다.
   fun doWork(task: String) {
     for (char in task.toCharArray()) {
       if (char == '.') {
