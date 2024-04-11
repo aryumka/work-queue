@@ -18,7 +18,9 @@ class Receiver {
     channel.queueDeclare(QUEUE_NAME, durable, false, false, null)
     println(" [*] Waiting for messages. To exit press Ctrl+C")
 
-    // 한 번에 하나의 메시지만 받도록 한다.
+    // RabbitMQ에서는 어떤 컨슈머가 처리 중인지 모르므로 이미 처리 중인 컨슈머에 메시지를 보낼 수도 있다.
+    // 아래와 같은 설정으로 서버에서 한 번에 전달하는 메시지 개수를 제한할 수 있다.
+    // 아래 설정을 이용할 경우 큐에 부하가 발생할 수 있으므로 주의해야 한다.
     channel.basicQos(1);
 
     val deliverCallback = DeliverCallback { _, delivery ->
